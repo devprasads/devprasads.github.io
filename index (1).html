@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+  <script>
+    function switchTab(tabId) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        
+        // Remove active class from all nav tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Show selected tab content
+        document.getElementById(tabId).classList.add('active');
+        
+        // Add active class to clicked nav tab
+        event.target.classList.add('active');
+    }
+</script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoga School Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #6366f1; --primary-dark: #4f46e5; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --info: #3b82f6;
+            --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+            --gray-600: #475569; --gray-700: #334155; --gray-800: #1e293b; --white: #ffffff;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px; color: var(--gray-800);
+        }
+        
+        .app-container {
+            max-width: 1600px; margin: 0 auto; background: var(--white);
+            border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 40px; color: var(--white);
+        }
+        
+        .app-header h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+        
+        .nav-tabs {
+            display: flex; background: var(--gray-50); border-bottom: 2px solid var(--gray-200);
+            overflow-x: auto; position: sticky; top: 0; z-index: 100;
+        }
+        
+        .nav-tab {
+            padding: 18px 28px; cursor: pointer; border: none; background: transparent;
+            font-size: 14px; font-weight: 600; color: var(--gray-600); white-space: nowrap;
+            border-bottom: 3px solid transparent; transition: all 0.3s;
+        }
+        
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--white); color: var(--primary); border-bottom-color: var(--primary);
+        }
+        
+        .content-area { padding: 40px; min-height: 600px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .section-title {
+            font-size: 28px; font-weight: 700; color: var(--gray-800);
+            margin-bottom: 32px; display: flex; align-items: center; gap: 12px;
+        }
+        
+        .auto-badge {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: var(--white); padding: 8px 16px; border-radius: 24px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+        }
+        
+        .metrics-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px; margin-bottom: 40px;
+        }
+        
+        .metric-card {
+            background: var(--white); border: 2px solid var(--gray-200);
+            border-radius: 20px; padding: 28px; transition: all 0.3s;
+        }
+        
+        .metric-card:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.12); transform: translateY(-8px); }
+        
+        .metric-label {
+            font-size: 13px; font-weight: 600; color: var(--gray-600);
+            margin-bottom: 12px; text-transform: uppercase;
+        }
+        
+        .metric-value {
+            font-size: 42px; font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-change {
+            font-size: 13px; margin-top: 12px; font-weight: 600;
+        }
+        .metric-change.positive { color: var(--success); }
+        
+        .occupancy-container {
+            background: var(--white); border: 2px solid var(--gray-200);
+            border-radius: 20px; padding: 32px; margin-bottom: 40px;
+        }
+        
+        .occupancy-item {
+            display: grid; grid-template-columns: 200px 1fr 120px;
+            align-items: center; gap: 24px; margin-bottom: 24px;
+        }
+        
+        .occupancy-label { font-size: 15px; font-weight: 700; color: var(--gray-700); }
+        
+        .occupancy-bar {
+            height: 36px; background: var(--gray-100); border-radius: 20px; overflow: hidden;
+        }
+        
+        .occupancy-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--white); font-size: 13px; font-weight: 700;
+            transition: width 1.2s ease; border-radius: 20px;
+        }
+        
+        .occupancy-count { font-size: 15px; font-weight: 700; color: var(--gray-700); text-align: right; }
+        
+        .data-table-container {
+            background: var(--white); border: 2px solid var(--gray-200);
+            border-radius: 16px; overflow-x: auto; margin-bottom: 32px;
+        }
+        
+        .data-table {
+            width: 100%; border-collapse: collapse; font-size: 14px; min-width: 800px;
+        }
+        
+        .data-table thead { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
+        
+        .data-table th {
+            padding: 18px 16px; text-align: left; font-weight: 700;
+            color: var(--white); text-transform: uppercase; font-size: 12px;
+        }
+        
+        .data-table td {
+            padding: 18px 16px; border-bottom: 1px solid var(--gray-200); color: var(--gray-700);
+        }
+        
+        .data-table tbody tr:hover { background: var(--gray-50); }
+        
+        .status-badge {
+            display: inline-flex; padding: 6px 14px; border-radius: 24px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+        }
+        
+        .status-paid { background: #d1fae5; color: #065f46; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-available { background: #dbeafe; color: #1e40af; }
+        .status-occupied { background: #fce7f3; color: #9f1239; }
+        .status-reserved { background: #e0e7ff; color: #3730a3; }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white); padding: 14px 28px; border: none; border-radius: 12px;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+        }
+        
+        .info-alert {
+            background: #eff6ff; border-left: 5px solid var(--info);
+            padding: 20px 24px; border-radius: 12px; margin-bottom: 28px; font-size: 14px;
+        }
+        
+        .summary-box {
+            background: var(--gray-50); border: 2px solid var(--gray-200);
+            border-radius: 20px; padding: 32px; margin-top: 40px;
+        }
+        
+        .summary-title { font-size: 20px; font-weight: 800; margin-bottom: 24px; }
+        
+        .summary-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;
+        }
+        
+        .summary-label {
+            font-size: 13px; font-weight: 600; color: var(--gray-600);
+            text-transform: uppercase; margin-bottom: 8px;
+        }
+        
+        .summary-value {
+            font-size: 28px; font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        .section-subtitle {
+            font-size: 18px; color: var(--primary); margin: 32px 0 20px 0; font-weight: 700;
+        }
+        
+        @media (max-width: 768px) {
+            body { padding: 0; }
+            .app-container { border-radius: 0; }
+            .content-area { padding: 24px; }
+            .metrics-grid { grid-template-columns: 1fr; }
+            .occupancy-item { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>🧘 Yoga School Management System</h1>
+            <p>Comprehensive guest booking, operations, and financial management dashboard</p>
+        </header>
+        
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">📊 CEO Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('master')">📋 Master Data</button>
+            <button class="nav-tab" onclick="switchTab('guests')">👤 Guests</button>
+            <button class="nav-tab" onclick="switchTab('rooms')">🏠 Rooms</button>
+            <button class="nav-tab" onclick="switchTab('transport')">🚗 Transport</button>
+            <button class="nav-tab" onclick="switchTab('massage')">💆 Massage</button>
+            <button class="nav-tab" onclick="switchTab('payments')">💳 Payments</button>
+        </nav>
+        
+        <main class="content-area">
+            <!-- DASHBOARD -->
+            <div id="dashboard" class="tab-content active">
+                <h2 class="section-title">📈 Monthly Overview - December 2025</h2>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Total Guests</div>
+                        <div class="metric-value">28</div>
+                        <div class="metric-change positive">↑ 12% from last month</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Active Bookings</div>
+                        <div class="metric-value">15</div>
+                        <div class="metric-change positive">↑ 3 new bookings</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Total Revenue</div>
+                        <div class="metric-value">₹2.4L</div>
+                        <div class="metric-change positive">↑ 18% growth</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Pending Payments</div>
+                        <div class="metric-value">₹45K</div>
+                        <div class="metric-change">3 guests pending</div>
+                    </div>
+                </div>
+                
+                <div class="occupancy-container">
+                    <h3 class="section-title">🏘️ Room Occupancy Status</h3>
+                    <div style="margin-top: 28px;">
+                        <div class="occupancy-item">
+                            <div class="occupancy-label">Main House</div>
+                            <div class="occupancy-bar"><div class="occupancy-fill" style="width: 85%">85%</div></div>
+                            <div class="occupancy-count">6 / 7 Rooms</div>
+                        </div>
+                        <div class="occupancy-item">
+                            <div class="occupancy-label">Garden Villa</div>
+                            <div class="occupancy-bar"><div class="occupancy-fill" style="width: 60%">60%</div></div>
+                            <div class="occupancy-count">3 / 5 Rooms</div>
+                        </div>
+                        <div class="occupancy-item">
+                            <div class="occupancy-label">Partner House A</div>
+                            <div class="occupancy-bar"><div class="occupancy-fill" style="width: 100%">100%</div></div>
+                            <div class="occupancy-count">4 / 4 Rooms</div>
+                        </div>
+                        <div class="occupancy-item">
+                            <div class="occupancy-label">Partner House B</div>
+                            <div class="occupancy-bar"><div class="occupancy-fill" style="width: 50%">50%</div></div>
+                            <div class="occupancy-count">2 / 4 Rooms</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">✈️ Upcoming Arrivals (Next 7 Days)</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th><th>Guest Name</th><th>Flight</th><th>Time</th>
+                                <th>Pickup Location</th><th>Driver</th><th>Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Dec 10</strong></td><td>Sarah Johnson</td><td>AI 204</td><td>14:30</td>
+                                <td>Bangalore Airport T1</td><td>Raj Kumar</td><td>+91-98765-43210</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 12</strong></td><td>Michael Chen</td><td>SG 502</td><td>09:15</td>
+                                <td>Bangalore International</td><td>Suresh</td><td>+91-98765-43211</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 14</strong></td><td>Emma Williams</td><td>BA 119</td><td>18:45</td>
+                                <td>Bangalore Airport T1</td><td>Raj Kumar</td><td>+91-98765-43210</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="summary-box">
+                    <h3 class="summary-title">💰 Financial Summary - December 2025</h3>
+                    <div class="summary-grid">
+                        <div><div class="summary-label">Total Income</div><div class="summary-value">₹2,40,000</div></div>
+                        <div><div class="summary-label">Total Expenses</div><div class="summary-value">₹40,200</div></div>
+                        <div><div class="summary-label">Net Profit</div><div class="summary-value" style="color: #10b981;">₹1,99,800</div></div>
+                        <div><div class="summary-label">Outstanding</div><div class="summary-value" style="color: #f59e0b;">₹45,000</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MASTER DATA -->
+            <div id="master" class="tab-content">
+                <h2 class="section-title">📋 Master Guest Data Entry <span class="auto-badge">⚡ AUTO-POPULATES ALL TABS</span></h2>
+                
+                <div class="info-alert">
+                    <strong>💡 Important:</strong> Enter guest information once here. All dependent tabs will automatically update.
+                </div>
+                
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Nationality</th>
+                                <th>Check-in</th><th>Check-out</th><th>Room</th><th>House</th>
+                                <th>Course</th><th>Fee</th><th>Paid</th><th>Balance</th><th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>001</strong></td><td>Sarah Johnson</td><td>sarah.j@email.com</td>
+                                <td>+1-555-0123</td><td>USA</td><td>Dec 10</td><td>Dec 24</td>
+                                <td>Room 3</td><td>Main House</td><td>200Hr TTC</td>
+                                <td>₹85,000</td><td>₹50,000</td><td>₹35,000</td>
+                                <td><span class="status-badge status-pending">Partial</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>002</strong></td><td>Michael Chen</td><td>m.chen@email.com</td>
+                                <td>+65-9123-4567</td><td>Singapore</td><td>Dec 12</td><td>Jan 09</td>
+                                <td>Room 1</td><td>Garden Villa</td><td>300Hr Advanced</td>
+                                <td>₹120,000</td><td>₹120,000</td><td>₹0</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>003</strong></td><td>Emma Williams</td><td>e.williams@email.com</td>
+                                <td>+44-7700-900123</td><td>UK</td><td>Dec 14</td><td>Dec 28</td>
+                                <td>Room 2</td><td>Partner House A</td><td>Retreat</td>
+                                <td>₹45,000</td><td>₹20,000</td><td>₹25,000</td>
+                                <td><span class="status-badge status-pending">Partial</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>004</strong></td><td>Priya Sharma</td><td>priya.s@email.com</td>
+                                <td>+91-98765-12345</td><td>India</td><td>Dec 05</td><td>Dec 19</td>
+                                <td>Room 2</td><td>Main House</td><td>200Hr TTC</td>
+                                <td>₹75,000</td><td>₹75,000</td><td>₹0</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- GUESTS -->
+            <div id="guests" class="tab-content">
+                <h2 class="section-title">👤 Guest Contact & Personal Information <span class="auto-badge">⚡ AUTO-UPDATED</span></h2>
+                
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Nationality</th>
+                                <th>Emergency Contact</th><th>Emergency Phone</th><th>Dietary</th><th>Medical</th><th>Requests</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>001</strong></td><td>Sarah Johnson</td><td>sarah.j@email.com</td>
+                                <td>+1-555-0123</td><td>USA</td><td>John Johnson</td><td>+1-555-0124</td>
+                                <td>Vegetarian</td><td>None</td><td>Quiet room</td>
+                            </tr>
+                            <tr>
+                                <td><strong>002</strong></td><td>Michael Chen</td><td>m.chen@email.com</td>
+                                <td>+65-9123-4567</td><td>Singapore</td><td>Lisa Chen</td><td>+65-9123-4568</td>
+                                <td>No dairy</td><td>Lower back sensitivity</td><td>Extra cushion</td>
+                            </tr>
+                            <tr>
+                                <td><strong>003</strong></td><td>Emma Williams</td><td>e.williams@email.com</td>
+                                <td>+44-7700-900123</td><td>UK</td><td>David Williams</td><td>+44-7700-900124</td>
+                                <td>Vegan</td><td>Knee injury (left)</td><td>Ground floor</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- ROOMS -->
+            <div id="rooms" class="tab-content">
+                <h2 class="section-title">🏠 Room Assignment & Occupancy <span class="auto-badge">⚡ AUTO-UPDATED</span></h2>
+                
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>House</th><th>Room</th><th>Type</th><th>Guest</th>
+                                <th>Check-in</th><th>Check-out</th><th>Days</th><th>Course</th><th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Main House</strong></td><td>Room 1</td><td>Deluxe Single</td><td>-</td>
+                                <td>-</td><td>-</td><td>-</td><td>-</td>
+                                <td><span class="status-badge status-available">Available</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Main House</strong></td><td>Room 2</td><td>Standard Double</td><td>Priya Sharma</td>
+                                <td>Dec 05</td><td>Dec 19</td><td>14</td><td>200Hr TTC</td>
+                                <td><span class="status-badge status-occupied">Occupied</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Main House</strong></td><td>Room 3</td><td>Deluxe Single</td><td>Sarah Johnson</td>
+                                <td>Dec 10</td><td>Dec 24</td><td>14</td><td>200Hr TTC</td>
+                                <td><span class="status-badge status-reserved">Reserved</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Garden Villa</strong></td><td>Room 1</td><td>Luxury Suite</td><td>Michael Chen</td>
+                                <td>Dec 12</td><td>Jan 09</td><td>28</td><td>300Hr Advanced</td>
+                                <td><span class="status-badge status-reserved">Reserved</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- TRANSPORT -->
+            <div id="transport" class="tab-content">
+                <h2 class="section-title">🚗 Driver Pickup & Drop-off Schedule <span class="auto-badge">⚡ AUTO-UPDATED</span></h2>
+                
+                <h3 class="section-subtitle">📥 Upcoming Pickups</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th><th>Guest</th><th>Flight</th><th>Time</th>
+                                <th>Location</th><th>Driver</th><th>Contact</th><th>Vehicle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Dec 10</strong></td><td>Sarah Johnson</td><td>AI 204</td><td>14:30</td>
+                                <td>Bangalore Airport T1</td><td>Raj Kumar</td><td>+91-98765-43210</td>
+                                <td>Toyota Innova</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 12</strong></td><td>Michael Chen</td><td>SG 502</td><td>09:15</td>
+                                <td>Bangalore International</td><td>Suresh</td><td>+91-98765-43211</td>
+                                <td>Maruti Ertiga</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- MASSAGE -->
+            <div id="massage" class="tab-content">
+                <h2 class="section-title">💆 Massage & Wellness Schedule <span class="auto-badge">⚡ AUTO-UPDATED</span></h2>
+                
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th><th>Time</th><th>Guest</th><th>Type</th>
+                                <th>Duration</th><th>Therapist</th><th>Cost</th><th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Dec 09</strong></td><td>10:00 AM</td><td>Lisa Anderson</td><td>Swedish</td>
+                                <td>60 min</td><td>Lakshmi</td><td>₹1,800</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 10</strong></td><td>02:00 PM</td><td>Kumar Patel</td><td>Deep Tissue</td>
+                                <td>90 min</td><td>Ramesh</td><td>₹2,500</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 11</strong></td><td>10:00 AM</td><td>Sarah Johnson</td><td>Ayurvedic</td>
+                                <td>90 min</td><td>Lakshmi</td><td>₹2,200</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- PAYMENTS -->
+            <div id="payments" class="tab-content">
+                <h2 class="section-title">💳 Payment Tracking <span class="auto-badge">⚡ AUTO-UPDATED</span></h2>
+                
+                <h3 class="section-subtitle">💰 Guest Payment Status</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Guest</th><th>Course</th><th>Total Fee</th>
+                                <th>Paid</th><th>Balance</th><th>Method</th><th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>001</strong></td><td>Sarah Johnson</td><td>200Hr TTC</td><td>₹85,000</td>
+                                <td>₹50,000</td><td>₹35,000</td><td>Bank Transfer</td>
+                                <td><span class="status-badge status-pending">Partial</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>002</strong></td><td>Michael Chen</td><td>300Hr Advanced</td><td>₹120,000</td>
+                                <td>₹120,000</td><td>₹0</td><td>Wire Transfer</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>003</strong></td><td>Emma Williams</td><td>Retreat</td><td>₹45,000</td>
+                                <td>₹20,000</td><td>₹25,000</td><td>PayPal</td>
+                                <td><span class="status-badge status-pending">Partial</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="summary-box">
+                    <h3 class="summary-title">💰 Payment Summary - December 2025
+<!-- TRANSPORT -->
+            <div id="transport" class="tab-content">
+                <h2 class="section-title">🚗 Driver Pickup & Drop-off Schedule <span class="auto-badge">⚡ AUTO-UPDATED</span></h2>
+                
+                <div class="info-alert">
+                    <strong>📍 Driver Coordination:</strong> All pickup/drop-off details automatically sync from guest check-in/check-out dates. Confirm flight details 48 hours before arrival.
+                </div>
+                
+                <h3 class="section-subtitle">📥 Upcoming Pickups</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th><th>Guest</th><th>Flight</th><th>Time</th>
+                                <th>Location</th><th>Driver</th><th>Contact</th><th>Vehicle</th><th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Dec 10</strong></td><td>Sarah Johnson</td><td>AI 204</td><td>14:30</td>
+                                <td>Bangalore Airport T1</td><td>Raj Kumar</td><td>+91-98765-43210</td>
+                                <td>Toyota Innova (KA-01-AB-1234)</td>
+                                <td><span class="status-badge status-pending">Scheduled</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 12</strong></td><td>Michael Chen</td><td>SG 502</td><td>09:15</td>
+                                <td>Bangalore International T2</td><td>Suresh</td><td>+91-98765-43211</td>
+                                <td>Maruti Ertiga (KA-05-MN-5678)</td>
+                                <td><span class="status-badge status-pending">Scheduled</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 14</strong></td><td>Emma Williams</td><td>BA 119</td><td>18:45</td>
+                                <td>Bangalore Airport T1</td><td>Raj Kumar</td><td>+91-98765-43210</td>
+                                <td>Toyota Innova (KA-01-AB-1234)</td>
+                                <td><span class="status-badge status-pending">Scheduled</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 16</strong></td><td>David Thompson</td><td>EK 568</td><td>22:30</td>
+                                <td>Bangalore International T2</td><td>Ramesh</td><td>+91-98765-43212</td>
+                                <td>Honda City (KA-03-CD-9012)</td>
+                                <td><span class="status-badge status-pending">Scheduled</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 18</strong></td><td>Anna Kowalski</td><td>QR 572</td><td>11:20</td>
+                                <td>Bangalore Airport T1</td><td>Suresh</td><td>+91-98765-43211</td>
+                                <td>Maruti Ertiga (KA-05-MN-5678)</td>
+                                <td><span class="status-badge status-pending">Scheduled</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3 class="section-subtitle">📤 Upcoming Drop-offs</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th><th>Guest</th><th>Flight</th><th>Time</th>
+                                <th>Location</th><th>Driver</th><th>Contact</th><th>Vehicle</th><th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Dec 19</strong></td><td>Priya Sharma</td><td>6E 231</td><td>16:15</td>
+                                <td>Bangalore Airport T1</td><td>Raj Kumar</td><td>+91-98765-43210</td>
+                                <td>Toyota Innova (KA-01-AB-1234)</td>
+                                <td><span class="status-badge status-pending">Scheduled</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 24</strong></td><td>Sarah Johnson</td><td>AI 205</td><td>19:45</td>
+                                <td>Bangalore International T2</td><td>Suresh</td><td>+91-98765-43211</td>
+                                <td>Maruti Ertiga (KA-05-MN-5678)</td>
+                                <td><span class="status-badge status-pending">Scheduled</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dec 28</strong></td><td>Emma Williams</td><td>BA 118</td><td>21:30</td>
+                                <td>Bangalore Airport T1</td><td>Ramesh</td><td>+91-98765-43212</td>
+                                <td>Honda City (KA-03-CD-9012)</td>
+                                <td><span class="status-badge status-pending">Scheduled</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="summary-box">
+                    <h3 class="summary-title">🚗 Transport Summary - December 2025</h3>
+                    <div class="summary-grid">
+                        <div><div class="summary-label">Total Pickups</div><div class="summary-value">8</div></div>
+                        <div><div class="summary-label">Total Drop-offs</div><div class="summary-value">6</div></div>
+                        <div><div class="summary-label">Active Drivers</div><div class="summary-value">4</div></div>
+                        <div><div class="summary-label">Vehicle Fleet</div><div class="summary-value">4</div></div>
+                    </div>
+                </div>
+            </div>
