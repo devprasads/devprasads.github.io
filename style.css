@@ -30,6 +30,43 @@ body {
 .cta:hover {
   opacity: 0.9;
 }
+.kpi-section {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.kpi-card {
+  background: #020617;
+  padding: 1.5rem 1rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.kpi-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #22c55e;
+}
+
+.kpi-label {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+  color: #cbd5f5;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
 .hero {
   padding: 3rem 1rem;
